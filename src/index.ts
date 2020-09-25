@@ -38,6 +38,7 @@ function promisifyCommand(command: ffmpeg.FfmpegCommand) {
 }
 
 app.post<{ gcsFilePath: string, bucketName: string }>("/", async (req, res) => {
+  console.log(req.body)
   const {
     gcsFilePath = "videos/test.mp4",
     bucketName = "db-method-dev.appspot.com",
