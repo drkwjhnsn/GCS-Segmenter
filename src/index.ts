@@ -61,7 +61,7 @@ app.post<{ gcsFilePath: string, bucketName: string }>("/", async (req, res) => {
     .outputOptions([
       "-f hls",
       "-g 60",
-      "-hls_time 2",
+      "-hls_time 5",
       "-hls_list_size 0",
       '-hls_segment_filename',
       path.join(tmpDir, `${title}%d.ts`),
