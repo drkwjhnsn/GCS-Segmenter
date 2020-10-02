@@ -16,7 +16,7 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')})
 
-const { CMS_PAT, CMS_SPACE_ID, CMS_ENV_ID, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } = process.env;
+const { CMS_PAT, CMS_SPACE_ID, CMS_ENV_ID, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS, CDN_HOST, PROXY_URL, OPEN_BUCKET, AUTH_BUCKET } = process.env;
 
 ffmpeg.setFfprobePath(ffprobe_static.path);
 
@@ -122,46 +122,18 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     });
 
     fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
-    const openBucketName = "db-method-dev-hls";
-    const authBucketName = "db-method-dev-m3u8";
 
-    const keyUrl = `https://storage.googleapis.com/${authBucketName}/${title}/${title}.key`;
+    const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${title}/${title}.key`;
     const keyPath = path.join(tmpDir, `${title}.key`);
     const keyInfo = `${keyUrl}\n${keyPath}`;
-    const masterUrl = `https://us-central1-db-method-dev.cloudfunctions.net/hls/${title}/master.m3u8`;
-    const baseUrl = `http://34.102.221.60:80/${openBucketName}/${title}/`;
+    const masterUrl = `${PROXY_URL}/hls/${title}/master.m3u8`;
+    const baseUrl = `${CDN_HOST}/${OPEN_BUCKET}/${title}/`;
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
-
-    // execSync(
-    //   `${ffmpeg_static}  -y \
-    //   -i ${originalFilePath} \
-    //   -c:a copy \
-    //   -hls_enc_key key.info \
-    //   -preset fast -sc_threshold 0 \
-    //   -c:v libx264 \
-    //   -filter:v fps=30 -g 60 \
-    //   -map 0 -s:v:0 426x240 -b:v:1 192k \
-    //   -map 0 -s:v:1 640x360 \
-    //   -map 0 -s:v:2 854x480 \
-    //   -map 0 -s:v:3 1280x720 \
-    //   -map 0 -s:v:4 1920x1080 \
-    //   -map 0 -s:v:5 2560x1440 \
-    //   -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
-    //   -f hls \
-    //   -hls_base_url "${baseUrl}" \
-    //   -hls_enc 1 \
-    //   -hls_key_info_file "${title}.keyinfo" \
-    //   -master_pl_name master.m3u8 \
-    //   -hls_time 6 \
-    //   -hls_list_size 0 \
-    //   -hls_playlist_type vod \
-    //   -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
-    //   ${tmpDir}/v%vprog_index.m3u8`,
-    //   { cwd: tmpDir }
-    // );
+    execSync(`file ${originalFilePath}`, { cwd: tmpDir })
     execSync(
       `${ffmpeg_static}  -y \
       -i ${originalFilePath} \
+      -c:a copy \
       -hls_enc_key key.info \
       -preset fast -sc_threshold 0 \
       -c:v libx264 \
@@ -186,13 +158,40 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       { cwd: tmpDir }
     );
 
+    // execSync(
+    //   `${ffmpeg_static}  -y \
+    //   -i ${originalFilePath} \
+    //   -hls_enc_key key.info \
+    //   -preset fast -sc_threshold 0 \
+    //   -c:v libx264 \
+    //   -filter:v fps=30 -g 60 \
+    //   -map 0 -s:v:0 426x240 -b:v:1 192k \
+    //   -map 0 -s:v:1 640x360 \
+    //   -map 0 -s:v:2 854x480 \
+    //   -map 0 -s:v:3 1280x720 \
+    //   -map 0 -s:v:4 1920x1080 \
+    //   -map 0 -s:v:5 2560x1440 \
+    //   -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
+    //   -f hls \
+    //   -hls_base_url "${baseUrl}" \
+    //   -hls_enc 1 \
+    //   -hls_key_info_file "${title}.keyinfo" \
+    //   -master_pl_name master.m3u8 \
+    //   -hls_time 6 \
+    //   -hls_list_size 0 \
+    //   -hls_playlist_type vod \
+    //   -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
+    //   ${tmpDir}/v%vprog_index.m3u8`,
+    //   { cwd: tmpDir }
+    // );
+
     console.log(`Segmentation of "${title}" complete`);
     const tmpDirContents = fs.readdirSync(tmpDir);
 
     const uploadToOpenBucket = tmpDirContents.filter((file) =>
       /.*?\.ts$/.test(file)
     );
-    const openBucket = storage.bucket(openBucketName);
+    const openBucket = storage.bucket(OPEN_BUCKET!);
     const openPromises = uploadToOpenBucket.map((file) => {
       return openBucket
         .upload(path.join(tmpDir, file), {
@@ -203,7 +202,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const uploadToAuthBucket = tmpDirContents.filter((file) =>
       /.*?\.(m3u8|key)$/.test(file)
     );
-    const authBucket = storage.bucket(authBucketName);
+    const authBucket = storage.bucket(AUTH_BUCKET!);
     const authPromises = uploadToAuthBucket.map((file) => {
       return authBucket
         .upload(path.join(tmpDir, file), {
