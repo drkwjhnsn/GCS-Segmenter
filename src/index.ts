@@ -95,6 +95,10 @@ const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
 const q = queue({ concurrency: 1, autostart: true });
 
 const processVideo = async (bucketName: string, gcsFilePath: string, email: string) => {
+  bucketName = "db-method-dev.appspot.com";
+  gcsFilePath = 'videos/short.mp4';
+  email = 'derek.johnson@appstem.com';
+
   console.log({ bucketName , gcsFilePath, email});
   console.log(`Processing of ${gcsFilePath} started on ${new Date().toUTCString()}`)
   const fileName = path.basename(gcsFilePath);
@@ -107,10 +111,10 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       .bucket(bucketName)
       .getFiles({ prefix: gcsFilePath });
 
-    const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
-    // const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
-    const originalFilePath = path.join(tmpDir, fileName);
-    // const originalFilePath = path.join(__dirname, "..", gcsFilePath);
+    // const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
+    const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
+    // const originalFilePath = path.join(tmpDir, fileName);
+    const originalFilePath = path.join(__dirname, "..", gcsFilePath);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
     const duration = await new Promise<number>((resolve, reject) => {
