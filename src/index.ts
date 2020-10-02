@@ -137,11 +137,12 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const masterUrl = `${PROXY_URL}/hls/${title}/master.m3u8`;
     const baseUrl = `${CDN_HOST}/${OPEN_BUCKET}/${title}/`;
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
+    console.log(fs.readFileSync(`${tmpDir}/${title}.keyinfo`, {encoding: 'utf-8'}))
     console.log(originalFilePath);
     execSync(
       `${ffmpeg_static}  -y \
       -i ${originalFilePath} \
-      \ 
+
       -hls_enc_key key.info \
       -preset fast -sc_threshold 0 \
       -c:v libx264 \
@@ -155,7 +156,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
       -f hls \
       -hls_base_url "${baseUrl}" \
-\
+
       -master_pl_name master.m3u8 \
       -hls_time 6 \
       -hls_list_size 0 \
