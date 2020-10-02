@@ -97,7 +97,7 @@ const q = queue({ concurrency: 1, autostart: true });
 setTimeout(() =>
   processVideo(
     "db-method-dev.appspot.com",
-    "videos/short.mp4",
+    "videos/bbbaudio.mp4",
     "derek.johnson@appstem.com"
   ), 1000
 );
