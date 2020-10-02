@@ -109,7 +109,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
 
     const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
     // const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
-    const originalFilePath = path.join('.', fileName);
+    const originalFilePath = path.join(tmpDir, fileName);
     // const originalFilePath = path.join(__dirname, "..", gcsFilePath);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
@@ -129,7 +129,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const keyPath = path.join(tmpDir, `${title}.key`);
     const keyInfo = `${keyUrl}\n${keyPath}`;
     const masterUrl = `https://us-central1-db-method-dev.cloudfunctions.net/hls/${title}/master.m3u8`;
-    const baseUrl = `https://storage.googleapis.com/${openBucketName}/${title}/`;
+    const baseUrl = `http://34.102.221.60:80/${openBucketName}/${title}/`;
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
 
     // execSync(
