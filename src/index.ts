@@ -121,13 +121,15 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const originalFilePath = path.join(__dirname, "..", gcsFilePath);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
-    const duration = await new Promise<number>((resolve, reject) => {
-          ffmpeg
-            .ffprobe(originalFilePath, (err, metadata) => {
-              if (err) return reject(err);
-              return resolve(Math.round(metadata.format.duration || 1));
-            });
-    });
+    // const duration = await new Promise<number>((resolve, reject) => {
+    //       ffmpeg
+    //         .ffprobe(originalFilePath, (err, metadata) => {
+    //           if (err) return reject(err);
+    //           return resolve(Math.round(metadata.format.duration || 1));
+    //         });
+    // });
+
+    const duration = 5
 
     fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
 
