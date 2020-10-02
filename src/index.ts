@@ -129,6 +129,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const masterUrl = `${PROXY_URL}/hls/${title}/master.m3u8`;
     const baseUrl = `${CDN_HOST}/${OPEN_BUCKET}/${title}/`;
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
+    console.log(originalFilePath)
     execSync(`file ${originalFilePath}`, { cwd: tmpDir })
     execSync(
       `${ffmpeg_static}  -y \
