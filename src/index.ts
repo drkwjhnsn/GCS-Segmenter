@@ -133,7 +133,8 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
 
     const stats = fs.statSync(originalFilePath);
-    console.log(`STATS: ${stats}`)
+    console.log(`STATS:`)
+    console.log(stats)
     const every = fs.readdirSync(originalFilePath);
     console.log(`path: ${every}`)
     execSync(
