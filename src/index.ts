@@ -163,8 +163,16 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       `${ffmpeg_static}  -y \
       -i ${originalFilePath} \
       -hls_enc_key key.info \
+      -preset fast -sc_threshold 0 \
       -c:v libx264 \
-      -s:v 640x360 \
+      -filter:v fps=30 -g 60 \
+      -map 0 -s:v:0 426x240 -b:v:1 192k \
+      -map 0 -s:v:1 640x360 \
+      -map 0 -s:v:2 854x480 \
+      -map 0 -s:v:3 1280x720 \
+      -map 0 -s:v:4 1920x1080 \
+      -map 0 -s:v:5 2560x1440 \
+      -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
       -f hls \
       -hls_base_url "${baseUrl}" \
       -hls_enc 1 \
