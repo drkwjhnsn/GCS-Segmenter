@@ -122,12 +122,11 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
     const duration = await new Promise<number>((resolve, reject) => {
-          ffmpeg
-            .ffprobe(originalFilePath, (err, metadata) => {
-              console.log(metadata)
-              if (err) return reject(err);
-              return resolve(Math.round(metadata.format.duration || 1));
-            });
+      ffmpeg.ffprobe(originalFilePath, (err, metadata) => {
+        console.log(metadata);
+        if (err) return reject(err);
+        return resolve(Math.round(metadata.format.duration || 1));
+      });
     });
 
     fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
@@ -138,11 +137,11 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const masterUrl = `${PROXY_URL}/hls/${title}/master.m3u8`;
     const baseUrl = `${CDN_HOST}/${OPEN_BUCKET}/${title}/`;
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
-    console.log(originalFilePath)
+    console.log(originalFilePath);
     execSync(
       `${ffmpeg_static}  -y \
       -i ${originalFilePath} \
-      -c:a copy \
+      \ 
       -hls_enc_key key.info \
       -preset fast -sc_threshold 0 \
       -c:v libx264 \
@@ -166,8 +165,9 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       { cwd: tmpDir }
     );
 
-      //     -hls_enc 1 \
-      // -hls_key_info_file "${title}.keyinfo" \
+    // -c:a copy \
+    //     -hls_enc 1 \
+    // -hls_key_info_file "${title}.keyinfo" \
 
     // execSync(
     //   `${ffmpeg_static}  -y \
@@ -203,10 +203,9 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     );
     const openBucket = storage.bucket(OPEN_BUCKET!);
     const openPromises = uploadToOpenBucket.map((file) => {
-      return openBucket
-        .upload(path.join(tmpDir, file), {
-          destination: `${title}/${file}`,
-        })
+      return openBucket.upload(path.join(tmpDir, file), {
+        destination: `${title}/${file}`,
+      });
     });
 
     const uploadToAuthBucket = tmpDirContents.filter((file) =>
@@ -214,10 +213,9 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     );
     const authBucket = storage.bucket(AUTH_BUCKET!);
     const authPromises = uploadToAuthBucket.map((file) => {
-      return authBucket
-        .upload(path.join(tmpDir, file), {
-          destination: `${title}/${file}`,
-        })
+      return authBucket.upload(path.join(tmpDir, file), {
+        destination: `${title}/${file}`,
+      });
     });
 
     await Promise.all([...openPromises, ...authPromises]);
@@ -227,10 +225,9 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     tmpDirContents.forEach((fname) => fs.unlinkSync(path.join(tmpDir, fname)));
     fs.rmdirSync(tmpDir);
 
-    await createCmsEntry(title, masterUrl, duration)
+    await createCmsEntry(title, masterUrl, duration);
     console.log(`Successfully uploaded "${title}" to CMS`);
     await sendCompletedEmail(email, title);
-    
   } catch (err) {
     console.error(err);
     sendErrorEmail(email, title, err)
