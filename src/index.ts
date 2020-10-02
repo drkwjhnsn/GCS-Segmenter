@@ -162,6 +162,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       -hls_list_size 0 \
       -hls_playlist_type vod \
       -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
+      -master_pl_name "${tmpDir}/master.m3u8" \
       ${tmpDir}/v%vprog_index.m3u8`,
       { cwd: tmpDir }
     );
