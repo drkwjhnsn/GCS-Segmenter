@@ -94,13 +94,13 @@ const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
 
 const q = queue({ concurrency: 1, autostart: true });
 
-setTimeout(() =>
-  processVideo(
-    "db-method-dev.appspot.com",
-    "videos/short.mp4",
-    "derek.johnson@appstem.com"
-  ), 1000
-);
+// setTimeout(() =>
+//   processVideo(
+//     "db-method-dev.appspot.com",
+//     "videos/short.mp4",
+//     "derek.johnson@appstem.com"
+//   ), 1000
+// );
 
 const processVideo = async (bucketName: string, gcsFilePath: string, email: string) => {
   console.log({ bucketName , gcsFilePath, email});
