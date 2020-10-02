@@ -132,6 +132,8 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const baseUrl = `https://storage.googleapis.com/${openBucketName}/${title}/`;
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
 
+    const stats = fs.statSync(originalFilePath);
+    console.log(stats)
     execSync(
       `${ffmpeg_static}  -y \
       -i ${originalFilePath} \
