@@ -94,13 +94,13 @@ const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
 
 const q = queue({ concurrency: 1, autostart: true });
 
-// setTimeout(() =>
-//   processVideo(
-//     "db-method-dev.appspot.com",
-//     "videos/short.mp4",
-//     "derek.johnson@appstem.com"
-//   ), 1000
-// );
+setTimeout(() =>
+  processVideo(
+    "db-method-dev.appspot.com",
+    "videos/short.mp4",
+    "derek.johnson@appstem.com"
+  ), 1000
+);
 
 const processVideo = async (bucketName: string, gcsFilePath: string, email: string) => {
   console.log({ bucketName , gcsFilePath, email});
@@ -139,6 +139,33 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
     console.log(fs.readFileSync(`${tmpDir}/${title}.keyinfo`, {encoding: 'utf-8'}))
     console.log(originalFilePath);
+    // execSync(
+    //   `${ffmpeg_static}  -y \
+    //   -i ${originalFilePath} \
+    //   -c:a copy \
+    //   -hls_enc_key key.info \
+    //   -preset fast -sc_threshold 0 \
+    //   -c:v libx264 \
+    //   -filter:v fps=30 -g 60 \
+    //   -map 0 -s:v:0 426x240 -b:v:1 192k fuck.mp4\
+    //   -map 0 -s:v:1 640x360 fuck1.mp4\
+    //   -map 0 -s:v:2 854x480 fuck2.mp4\
+    //   -map 0 -s:v:3 1280x720 fuck3.mp4\
+    //   -map 0 -s:v:4 1920x1080 fuck4.mp4\
+    //   -map 0 -s:v:5 2560x1440 fuck5.mp4\
+    //   -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
+    //   -f hls \
+    //   -hls_base_url "${baseUrl}" \
+
+    //   -master_pl_name master.m3u8 \
+    //   -hls_time 6 \
+    //   -hls_list_size 0 \
+    //   -hls_playlist_type vod \
+    //   -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
+    //   -master_pl_name "${tmpDir}/master.m3u8" \
+    //   ${tmpDir}/v%vprog_index.m3u8`,
+    //   { cwd: tmpDir }
+    // );
     execSync(
       `${ffmpeg_static}  -y \
       -i ${originalFilePath} \
@@ -162,7 +189,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       -hls_list_size 0 \
       -hls_playlist_type vod \
       -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
-      -master_pl_name "${tmpDir}/master.m3u8" \
+      -master_pl_name "master.m3u8" \
       ${tmpDir}/v%vprog_index.m3u8`,
       { cwd: tmpDir }
     );
