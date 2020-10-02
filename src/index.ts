@@ -109,7 +109,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
 
     const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
     // const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
-    const originalFilePath = path.join(tmpDir, fileName);
+    const originalFilePath = path.join('.', fileName);
     // const originalFilePath = path.join(__dirname, "..", gcsFilePath);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
