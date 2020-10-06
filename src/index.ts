@@ -183,7 +183,6 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
       -f hls \
       -hls_base_url "${baseUrl}" \
-
       -master_pl_name master.m3u8 \
       -hls_time 6 \
       -hls_list_size 0 \
