@@ -174,7 +174,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       -preset fast -sc_threshold 0 \
       -c:v libx264 \
       -filter:v fps=30 -g 60 \
-      -map 0 -s:v:0 426x240 -b:v:1 192k fuck.mp4\
+      -map 0 -s:v:0 426x240 -b:v:1 192k \
       -map 0 -s:v:1 640x360 \
       -map 0 -s:v:2 854x480 \
       -map 0 -s:v:3 1280x720 \
