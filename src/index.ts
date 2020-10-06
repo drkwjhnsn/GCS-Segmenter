@@ -134,7 +134,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${title}/${title}.key`;
     const keyPath = path.join(tmpDir, `${title}.key`);
     const keyInfo = `${keyUrl}\n${keyPath}`;
-    const masterUrl = `${PROXY_URL}/hls/${title}/master.m3u8`;
+    const masterUrl = `${PROXY_URL}/${title}/master.m3u8`;
     const baseUrl = `${CDN_HOST}/${OPEN_BUCKET}/${title}/`;
     fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
     console.log(fs.readFileSync(`${tmpDir}/${title}.keyinfo`, {encoding: 'utf-8'}))
