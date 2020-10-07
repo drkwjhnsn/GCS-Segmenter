@@ -94,13 +94,13 @@ const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
 
 const q = queue({ concurrency: 1, autostart: true });
 
-setTimeout(() =>
-  processVideo(
-    "db-method-dev.appspot.com",
-    "videos/bbbaudio.mp4",
-    "derek.johnson@appstem.com"
-  ), 1000
-);
+// setTimeout(() =>
+//   processVideo(
+//     "db-method-dev.appspot.com",
+//     "videos/bbbaudio.mp4",
+//     "derek.johnson@appstem.com"
+//   ), 1000
+// );
 
 const processVideo = async (bucketName: string, gcsFilePath: string, email: string) => {
   console.log({ bucketName , gcsFilePath, email});
@@ -109,16 +109,16 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
   const title = fileName.split(".")[0].replace(/\.[^/.]+$/, "");
   const gcsFileDir = path.dirname(gcsFilePath);
   try {
-    // await sendStartedEmail(email, title);
+    await sendStartedEmail(email, title);
 
     const [videoObjectResponse] = await storage
       .bucket(bucketName)
       .getFiles({ prefix: gcsFilePath });
 
-    // const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
-    const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
-    // const originalFilePath = path.join(tmpDir, fileName);
-    const originalFilePath = path.join(__dirname, "..", gcsFilePath);
+    const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
+    // const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
+    const originalFilePath = path.join(tmpDir, fileName);
+    // const originalFilePath = path.join(__dirname, "..", gcsFilePath);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
     const duration = await new Promise<number>((resolve, reject) => {
