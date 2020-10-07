@@ -142,7 +142,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     
     execSync(
       `${ffmpeg_static}  -y \
-      -i ${originalFilePath} \
+      -i "${originalFilePath}" \
       -c:a copy \
       -hls_key_info_file "${title}.keyinfo" \
       -sc_threshold 0 \
