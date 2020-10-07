@@ -145,10 +145,10 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       -i ${originalFilePath} \
       -c:a copy \
       -hls_enc_key key.info \
-      -preset fast -sc_threshold 0 \
+      -sc_threshold 0 \
       -c:v libx264 \
       -filter:v fps=30 -g 60 \
-      -map 0 -s:v:0 426x240 -b:v:1 192k \
+      -map 0 -s:v:0 426x240 -b:v:0 192k \
       -map 0 -s:v:1 640x360 \
       -map 0 -s:v:2 854x480 \
       -map 0 -s:v:3 1280x720 \
@@ -167,9 +167,9 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       { cwd: tmpDir }
     );
 
+      //     -hls_enc 1 \
+      // -hls_key_info_file "${title}.keyinfo" \
 
-    //     -hls_enc 1 \
-    // -hls_key_info_file "${title}.keyinfo" \
 
 
     console.log(`Segmentation of "${title}" complete`);
