@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
+import { escape } from 'querystring';
 import ffmpeg_static from "ffmpeg-static";
 import ffprobe_static from "ffprobe-static";
 import * as ffmpeg from "fluent-ffmpeg";
@@ -131,20 +132,21 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
 
     fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
 
-    const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${title}/${title}.key`;
-    const keyPath = path.join(tmpDir, `${title}.key`);
+    const urlTitle = escape(title)
+    const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${urlTitle}/${urlTitle}.key`;
+    const keyPath = path.join(tmpDir, `${urlTitle}.key`);
     const keyInfo = `${keyUrl}\n${keyPath}`;
-    const masterUrl = `${PROXY_URL}/${title}/master.m3u8`;
-    const baseUrl = `${CDN_HOST}/${title}/`;
-    fs.writeFileSync(path.join(tmpDir, `${title}.keyinfo`), keyInfo);
-    console.log(fs.readFileSync(`${tmpDir}/${title}.keyinfo`, {encoding: 'utf-8'}))
+    const masterUrl = `${PROXY_URL}/${urlTitle}/master.m3u8`;
+    const baseUrl = `${CDN_HOST}/${urlTitle}/`;
+    fs.writeFileSync(path.join(tmpDir, `${urlTitle}.keyinfo`), keyInfo);
+    console.log(fs.readFileSync(`${tmpDir}/${urlTitle}.keyinfo`, {encoding: 'utf-8'}))
     console.log(originalFilePath);
     
     execSync(
       `${ffmpeg_static}  -y \
       -i "${originalFilePath}" \
       -c:a copy \
-      -hls_key_info_file "${title}.keyinfo" \
+      -hls_key_info_file "${urlTitle}.keyinfo" \
       -sc_threshold 0 \
       -c:v libx264 \
       -filter:v fps=30 -g 60 \
