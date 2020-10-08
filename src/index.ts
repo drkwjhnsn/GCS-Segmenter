@@ -132,7 +132,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
 
     fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
 
-    const urlTitle = escape(title)
+    const urlTitle = title.replace(/[\/.?=&:#]+/g, '');
     const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${urlTitle}/${urlTitle}.key`;
     const keyPath = path.join(tmpDir, `${urlTitle}.key`);
     const keyInfo = `${keyUrl}\n${keyPath}`;
