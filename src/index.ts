@@ -7,7 +7,6 @@ import nodemailer from "nodemailer";
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import { escape } from 'querystring';
 import ffmpeg_static from "ffmpeg-static";
 import ffprobe_static from "ffprobe-static";
 import * as ffmpeg from "fluent-ffmpeg";
@@ -108,7 +107,6 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
   console.log(`Processing of ${gcsFilePath} started on ${new Date().toUTCString()}`)
   const fileName = path.basename(gcsFilePath);
   const title = fileName.split(".")[0].replace(/\.[^/.]+$/, "");
-  const gcsFileDir = path.dirname(gcsFilePath);
   try {
     await sendStartedEmail(email, title);
 
@@ -183,7 +181,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const openBucket = storage.bucket(OPEN_BUCKET!);
     const openPromises = uploadToOpenBucket.map((file) => {
       return openBucket.upload(path.join(tmpDir, file), {
-        destination: `${title}/${file}`,
+        destination: `${urlTitle}/${file}`,
       });
     });
 
@@ -193,7 +191,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     const authBucket = storage.bucket(AUTH_BUCKET!);
     const authPromises = uploadToAuthBucket.map((file) => {
       return authBucket.upload(path.join(tmpDir, file), {
-        destination: `${title}/${file}`,
+        destination: `${urlTitle}/${file}`,
       });
     });
 
