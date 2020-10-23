@@ -169,10 +169,7 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       { cwd: tmpDir }
     );
   } catch (err) {
-    console.log(`stdout: ${err.stdout.toString()}`)
-    console.log(`ERROR ${err.status}`)
-    console.log(`MSG: ${err.message}`)
-    console.error(`stderr: ${err.stderr.toString()}`)
+    console.log(`ERROR: \n${err.message}`)
     return
   }
 
