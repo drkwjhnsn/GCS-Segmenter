@@ -16,7 +16,7 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')})
 
-const { CMS_PAT, CMS_SPACE_ID, CMS_ENV_ID, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS, CDN_HOST, PROXY_URL, OPEN_BUCKET, AUTH_BUCKET } = process.env;
+const { CMS_PAT, CMS_SPACE_ID, CMS_ENV_ID, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS, CDN_HOST, PROXY_URL, OPEN_BUCKET, AUTH_BUCKET, PROJECT_ROOT } = process.env;
 
 ffmpeg.setFfprobePath(ffprobe_static.path);
 
@@ -24,7 +24,7 @@ const app = express();
 const port = 3000;
 app.use(bodyParser.json())
 
-const storage = new Storage({ keyFilename: "GCS-Segmenter.json" });
+const storage = new Storage({ keyFilename: path.join(PROJECT_ROOT || '..', "GCS-Segmenter.json" )});
 const cmsClient = contentful.createClient({
   accessToken: CMS_PAT!,
 });
