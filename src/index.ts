@@ -140,6 +140,8 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     console.log(fs.readFileSync(`${tmpDir}/${urlTitle}.keyinfo`, {encoding: 'utf-8'}))
     console.log(originalFilePath);
     
+
+  try {
     execSync(
       `${ffmpeg_static}  -y \
       -i "${originalFilePath}" \
@@ -166,6 +168,13 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
       ${tmpDir}/v%vprog_index.m3u8`,
       { cwd: tmpDir }
     );
+  } catch (err) {
+    console.log(`stdout: ${err.stdout.toString()}`)
+    console.log(`ERROR ${err.status}`)
+    console.log(`MSG: ${err.message}`)
+    console.error(`stderr: ${err.stderr.toString()}`)
+    return
+  }
 
       //     -hls_enc 1 \
       // -hls_key_info_file "${title}.keyinfo" \
