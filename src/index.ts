@@ -45,7 +45,7 @@ const cmsClient = contentful.createClient({
    id: "3ZV6uoMXsZO2QTms7ebxeF",
  }}}
        // @ts-ignore
- entry.fields.freeAccess["en-US"] = true
+ entry.fields.freeAccess = { "en-US" : true }
  return entry.update();
       });
 
