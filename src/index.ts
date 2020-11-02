@@ -13,6 +13,7 @@ import * as ffmpeg from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import { randomBytes } from "crypto"
 import dotenv from 'dotenv';
+import e from "express";
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')})
 
@@ -36,9 +37,20 @@ const cmsClient = contentful.createClient({
     .then((space) => space.getEnvironment(CMS_ENV_ID!))
     .then(async (environment) => {
       const classes = await environment.getEntries({ content_type: "class" });
-      classes.items.forEach((e) => {
-        console.log(JSON.stringify(e.fields, null, 2));
+      const allPromises = classes.items.map((entry) => {
+       // @ts-ignore
+ entry.fields.fullVideo["en-US"].sys = {
+   type: "Link",
+   linkType: "Entry",
+   id: "3ZV6uoMXsZO2QTms7ebxeF",
+ };
+       // @ts-ignore
+ entry.fields.freeAccess["en-US"] = true
+ return entry.update();
       });
+
+      await Promise.all(allPromises)
+      console.log('DONE')
     });
 
     // tmp
