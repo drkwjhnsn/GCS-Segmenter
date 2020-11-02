@@ -131,6 +131,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
 
     fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
 
+    console.log(`title: ${title}`)
     const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
     const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${urlTitle}/${urlTitle}.key`;
     const keyPath = path.join(tmpDir, `${urlTitle}.key`);
@@ -138,8 +139,9 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     const masterUrl = `${PROXY_URL}/${urlTitle}/master.m3u8`;
     const baseUrl = `${CDN_HOST}/${urlTitle}/`;
     fs.writeFileSync(path.join(tmpDir, `${urlTitle}.keyinfo`), keyInfo);
-    console.log(fs.readFileSync(`${tmpDir}/${urlTitle}.keyinfo`, {encoding: 'utf-8'}))
+    // console.log(fs.readFileSync(`${tmpDir}/${urlTitle}.keyinfo`, {encoding: 'utf-8'}))
     console.log(originalFilePath);
+    console.log(`urlTitle: ${urlTitle}`)
     
 
   try {
@@ -173,11 +175,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     console.log(`ERROR: \n${err.message}`)
     return
   }
-
-      //     -hls_enc 1 \
-      // -hls_key_info_file "${title}.keyinfo" \
-
-
 
     console.log(`Segmentation of "${title}" complete`);
     const tmpDirContents = fs.readdirSync(tmpDir);
