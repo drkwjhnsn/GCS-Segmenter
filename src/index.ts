@@ -29,6 +29,20 @@ const cmsClient = contentful.createClient({
   accessToken: CMS_PAT!,
 });
 
+// tmp
+
+  cmsClient
+    .getSpace(CMS_SPACE_ID!)
+    .then((space) => space.getEnvironment(CMS_ENV_ID!))
+    .then(async (environment) => {
+      const classes = await environment.getEntries({ content_type: "class" });
+      classes.items.forEach((e) => {
+        console.log(JSON.stringify(e.fields, null, 2));
+      });
+    });
+
+    // tmp
+
   const transporter = nodemailer.createTransport({
     name: 'appstem.com',
     host: EMAIL_HOST,
