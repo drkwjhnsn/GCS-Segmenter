@@ -129,10 +129,10 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       });
     });
 
-    fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
+    const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
+    fs.writeFileSync(path.join(tmpDir, `${urlTitle}.key`), randomBytes(16));
 
     console.log(`title: ${title}`)
-    const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
     const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${urlTitle}/${urlTitle}.key`;
     const keyPath = path.join(tmpDir, `${urlTitle}.key`);
     const keyInfo = `${keyUrl}\n${keyPath}`;
