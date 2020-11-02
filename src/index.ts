@@ -30,31 +30,6 @@ const cmsClient = contentful.createClient({
   accessToken: CMS_PAT!,
 });
 
-// tmp
-
-  cmsClient
-    .getSpace(CMS_SPACE_ID!)
-    .then((space) => space.getEnvironment(CMS_ENV_ID!))
-    .then(async (environment) => {
-      const classes = await environment.getEntries({ content_type: "class" });
-      const allPromises = classes.items.map((entry) => {
-       // @ts-ignore
- entry.fields.fullVideo =  { "en-US" : { sys: {
-   type: "Link",
-   linkType: "Entry",
-   id: "3ZV6uoMXsZO2QTms7ebxeF",
- }}}
-       // @ts-ignore
- entry.fields.freeAccess = { "en-US" : true }
- return entry.update();
-      });
-
-      await Promise.all(allPromises)
-      console.log('DONE')
-    });
-
-    // tmp
-
   const transporter = nodemailer.createTransport({
     name: 'appstem.com',
     host: EMAIL_HOST,
