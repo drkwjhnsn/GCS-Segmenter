@@ -131,7 +131,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
 
     fs.writeFileSync(path.join(tmpDir, `${title}.key`), randomBytes(16));
 
-    const urlTitle = title.replace(/[\/.?=&:#]+/g, '');
+    const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
     const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${urlTitle}/${urlTitle}.key`;
     const keyPath = path.join(tmpDir, `${urlTitle}.key`);
     const keyInfo = `${keyUrl}\n${keyPath}`;
@@ -213,7 +213,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     console.log(`Successfully uploaded "${title}" to CMS`);
 
     await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
-    
+
     await sendCompletedEmail(email, title);
   } catch (err) {
     console.error(err);
