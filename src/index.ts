@@ -102,8 +102,8 @@ const q = queue({ concurrency: 1, autostart: true });
 //   ), 1000
 // );
 
-const processVideo = async (bucketName: string, gcsFilePath: string, email: string) => {
-  console.log({ bucketName , gcsFilePath, email});
+const processVideo = async (sourceBucket: string, gcsFilePath: string, email: string) => {
+  console.log({ bucketName: sourceBucket , gcsFilePath, email});
   console.log(`Processing of ${gcsFilePath} started on ${new Date().toUTCString()}`)
   const fileName = path.basename(gcsFilePath);
   const title = fileName.split(".")[0].replace(/\.[^/.]+$/, "");
@@ -111,8 +111,9 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
     await sendStartedEmail(email, title);
 
     const [videoObjectResponse] = await storage
-      .bucket(bucketName)
+      .bucket(sourceBucket)
       .getFiles({ prefix: gcsFilePath });
+    
 
     const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
     // const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
@@ -210,6 +211,9 @@ const processVideo = async (bucketName: string, gcsFilePath: string, email: stri
 
     await createCmsEntry(title, masterUrl, duration);
     console.log(`Successfully uploaded "${title}" to CMS`);
+
+    await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
+    
     await sendCompletedEmail(email, title);
   } catch (err) {
     console.error(err);
