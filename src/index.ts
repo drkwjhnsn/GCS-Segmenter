@@ -13,7 +13,6 @@ import * as ffmpeg from "fluent-ffmpeg";
 import { execSync } from "child_process";
 import { randomBytes } from "crypto"
 import dotenv from 'dotenv';
-import e from "express";
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')})
 
@@ -140,7 +139,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     const masterUrl = `${PROXY_URL}/${urlTitle}/master.m3u8`;
     const baseUrl = `${CDN_HOST}/${urlTitle}/`;
     fs.writeFileSync(path.join(tmpDir, `${urlTitle}.keyinfo`), keyInfo);
-    // console.log(fs.readFileSync(`${tmpDir}/${urlTitle}.keyinfo`, {encoding: 'utf-8'}))
     console.log(originalFilePath);
     console.log(`urlTitle: ${urlTitle}`)
     
@@ -153,13 +151,14 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       -hls_key_info_file "${urlTitle}.keyinfo" \
       -sc_threshold 0 \
       -c:v libx264 \
-      -filter:v fps=30 -g 60 \
-      -map 0 -s:v:0 426x240 -b:v:0 192k -maxrate:v:0 211k -bufsize:v:0 317k\
+      -filter:v fps=23.98 -g 60 \
+      -map v:0 -s:v:0 214x120 -b:v:0 92k -maxrate:v:0 101k -bufsize:v:0 150k -profile:v:0 baseline \
       -map 0 -s:v:1 640x360 -b:v:1 384k -maxrate:v:1 422k -bufsize:v:1 633k\
       -map 0 -s:v:2 854x480 -b:v:2 512k -maxrate:v:2 563k -bufsize:v:2 845k\
       -map 0 -s:v:3 1280x720 -b:v:3 1024k -maxrate:v:3 1126k -bufsize:v:3 1689k\
       -map 0 -s:v:4 1920x1080 -b:v:4 2056k -maxrate:v:4 2262k -bufsize:v:4 3393k\
       -map 0 -s:v:5 2560x1440 -b:v:5 3212k -maxrate:v:5 3533k -bufsize:v:5 4818k\
+      -map a:0 -c:a:0 aac -b:a:0 56k -ac 2 \
       -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
       -f hls \
       -hls_base_url "${baseUrl}" \
@@ -169,7 +168,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       -hls_playlist_type vod \
       -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
       -master_pl_name "master.m3u8" \
-      ${tmpDir}/v%vprog_index.m3u8`,
+      "${tmpDir}/v%vprog_index.m3u8"`,
       { cwd: tmpDir }
     );
   } catch (err) {
