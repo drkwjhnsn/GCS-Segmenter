@@ -46,7 +46,8 @@ app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async 
     bucketName,
     email,
   } = req.body;
-  
+  console.log(`added ${gcsFilePath} to the queue`)
+  console.log(q.length)
 
   q.push(() => processVideo(bucketName, gcsFilePath, email));
   res.status(202).end();
