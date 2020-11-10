@@ -93,7 +93,7 @@ const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
     .then((entry) => entry.publish());
 }
 
-const q = queue({ concurrency: 1, autostart: true });
+const q = queue({ concurrency: 0, autostart: true });
 
 // setTimeout(() =>
 //   processVideo(
