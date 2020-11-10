@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import queue, { QueueWorker } from 'queue';
+import queue from 'queue';
 import {Storage} from '@google-cloud/storage';
 import * as contentful from "contentful-management";
 import nodemailer from "nodemailer";
@@ -48,8 +48,8 @@ app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async 
   } = req.body;
   console.log(`accepted ${gcsFilePath}`)
   console.log(q.length)
-  console.log(q.eventNames)
-  q.push(() => processVideo(bucketName, gcsFilePath, email));
+  console.log(q.eventNames())
+  q.push((cb) => processVideo(bucketName, gcsFilePath, email).finally(() => cb!()));
   res.status(202).end();
 });
 
