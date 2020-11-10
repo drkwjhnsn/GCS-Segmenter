@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import queue from 'queue';
+import PQueue from 'p-queue';
 import {Storage} from '@google-cloud/storage';
 import * as contentful from "contentful-management";
 import nodemailer from "nodemailer";
@@ -29,6 +29,9 @@ const cmsClient = contentful.createClient({
   accessToken: CMS_PAT!,
 });
 
+const queue = new PQueue({concurrency: 1});
+
+
   const transporter = nodemailer.createTransport({
     name: 'appstem.com',
     host: EMAIL_HOST,
@@ -46,10 +49,10 @@ app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async 
     bucketName,
     email,
   } = req.body;
-  console.log(`added ${gcsFilePath} to the queue`)
-  console.log(q.length)
 
-  q.push(() => processVideo(bucketName, gcsFilePath, email));
+
+
+  queue.add(() => processVideo(bucketName, gcsFilePath, email));
   res.status(202).end();
 });
 
@@ -94,16 +97,6 @@ const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
     .then((entry) => entry.publish());
 }
 
-const q = queue({ concurrency: 0, autostart: true });
-
-// setTimeout(() =>
-//   processVideo(
-//     "db-method-dev.appspot.com",
-//     "videos/bbbaudio.mp4",
-//     "derek.johnson@appstem.com"
-//   ), 1000
-// );
-
 const processVideo = async (sourceBucket: string, gcsFilePath: string, email: string) => {
   console.log({ bucketName: sourceBucket , gcsFilePath, email});
   console.log(`Processing of ${gcsFilePath} started on ${new Date().toUTCString()}`)
@@ -118,9 +111,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     
 
     const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
-    // const tmpDir = fs.mkdtempSync(path.join(__dirname, "temp"));
     const originalFilePath = path.join(tmpDir, fileName);
-    // const originalFilePath = path.join(__dirname, "..", gcsFilePath);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
     const duration = await new Promise<number>((resolve, reject) => {
