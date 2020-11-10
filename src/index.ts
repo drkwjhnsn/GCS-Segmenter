@@ -123,7 +123,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
 
     const duration = await new Promise<number>((resolve, reject) => {
       ffmpeg.ffprobe(originalFilePath, (err, metadata) => {
-        console.log(metadata);
+        // console.log(metadata);
         if (err) return reject(err);
         return resolve(Math.round(metadata.format.duration || 1));
       });
