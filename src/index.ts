@@ -46,9 +46,8 @@ app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async 
     bucketName,
     email,
   } = req.body;
-  console.log(`accepted ${gcsFilePath}`)
-  console.log(q.length)
-  console.log(q.eventNames())
+  
+
   q.push(() => processVideo(bucketName, gcsFilePath, email));
   res.status(202).end();
 });
