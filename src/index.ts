@@ -47,7 +47,7 @@ app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async 
     bucketName,
     email,
   } = req.body;
-  q.push(() => processVideo(bucketName, gcsFilePath, email));
+  q.push((cb) => processVideo(bucketName, gcsFilePath, email).finally(() => cb!()));
   res.status(202).end();
 });
 
