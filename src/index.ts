@@ -55,7 +55,6 @@ app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async 
   queue.add(() => processVideo(bucketName, gcsFilePath, email));
   console.log(`Added ${gcsFilePath} to work queue`)
   console.log(queue.size)
-  console.log(queue.eventNames)
   res.status(202).end();
 });
 
