@@ -196,7 +196,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         -hls_list_size 0 \
         -hls_playlist_type vod \
         -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
-        -master_pl_name "master.m3u8" \
         "${tmpDir}/v%vprog_index.m3u8"`,
         { cwd: tmpDir }
       );
