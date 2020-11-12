@@ -33,7 +33,7 @@ const main = async () => {
   ).sort((a, b) => a.metadata.size - b.metadata.size)
   for (let i = 0; i < videoObjectResponse.length; i++) {
     const meta = videoObjectResponse[i].metadata;
-    console.log(JSON.stringify(meta.name.split("/")[1], null, 2));
+    console.log(`${meta.name}: ${meta.size}`)
 
     const raw = JSON.stringify({
       name: meta.name.split("/")[1],
@@ -47,13 +47,13 @@ const main = async () => {
       redirect: "follow",
     };
 
-    fetch(
-      "https://us-central1-db-method-app.cloudfunctions.net/manualTrigger",
-      requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.log("error", error));
+    // fetch(
+    //   "https://us-central1-db-method-app.cloudfunctions.net/manualTrigger",
+    //   requestOptions
+    // )
+    //   .then((response) => response.text())
+    //   .then((result) => console.log(result))
+    //   .catch((error) => console.log("error", error));
   }
 };
 
