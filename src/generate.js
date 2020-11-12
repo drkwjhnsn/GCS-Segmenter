@@ -47,13 +47,13 @@ const main = async () => {
       redirect: "follow",
     };
 
-    // fetch(
-    //   "https://us-central1-db-method-app.cloudfunctions.net/manualTrigger",
-    //   requestOptions
-    // )
-    //   .then((response) => response.text())
-    //   .then((result) => console.log(result))
-    //   .catch((error) => console.log("error", error));
+    fetch(
+      "https://us-central1-db-method-app.cloudfunctions.net/manualTrigger",
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.log("error", error));
   }
 };
 
