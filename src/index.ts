@@ -183,6 +183,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     console.log(`Segmentation of "${title}" complete`);
     const tmpDirContents = fs.readdirSync(tmpDir);
 
+    console.log(tmpDirContents)
+
     const uploadToOpenBucket = tmpDirContents.filter((file) =>
       /.*?\.ts$/.test(file)
     );
