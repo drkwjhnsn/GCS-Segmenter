@@ -169,7 +169,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       ps.on('message', (msg) => console.log(msg));
       ps.on('exit', (code) => {
         if (!code) {
-          setTimeout(resolve, 10000)
+          resolve()
         } else {
           reject(code)
         }
@@ -215,7 +215,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     await createCmsEntry(title, masterUrl, duration);
     console.log(`Successfully uploaded "${title}" to CMS`);
 
-    await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
+    // await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
 
     await sendCompletedEmail(email, title);
   } catch (err) {
