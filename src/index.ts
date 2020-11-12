@@ -112,7 +112,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       .getFiles({ prefix: gcsFilePath });
     
 
-    const tmpDir = fs.mkdtempSync(`${os.tmpdir()}/`);
+    const tmpDir = fs.mkdtempSync(__dirname);
     const originalFilePath = path.join(tmpDir, fileName);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
@@ -147,7 +147,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         -sc_threshold 0 \
         -c:v libx264 \
         -filter:v fps=23.98 -g 60 \
-        -map v:0 -s:v:0 214x120 -b:v:0 128k -maxrate:v:0 135k -bufsize:v:0 145k -profile:v:0 baseline \
+        -map v:0 -s:v:0 214x120 -b:v:0 156k -maxrate:v:0 170k -bufsize:v:0 255k -profile:v:0 baseline \
         -map 0 -s:v:1 640x360 -b:v:1 384k -maxrate:v:1 422k -bufsize:v:1 633k\
         -map 0 -s:v:2 854x480 -b:v:2 512k -maxrate:v:2 563k -bufsize:v:2 845k\
         -map 0 -s:v:3 1280x720 -b:v:3 1024k -maxrate:v:3 1126k -bufsize:v:3 1689k\
