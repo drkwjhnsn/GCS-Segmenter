@@ -190,7 +190,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     })
   } catch (err) {
     console.log(`ERROR: \n${clc.red(err.message)}`)
-    return
+    // return
+    throw err
   }
 
     console.log(`Segmentation of "${title}" complete`);
