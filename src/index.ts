@@ -167,10 +167,18 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         -hls_playlist_type vod \
         -hls_segment_filename "v%vfileSequence%d.ts" \
         "v%vprog_index.m3u8"`,
-        { cwd: tmpDir }
+        { cwd: tmpDir  }, (error, stdout, stderr) => {
+          if (error) {
+            reject(error);
+          } else if (stderr) {
+            console.error(stderr)
+          } else if (stdout) {
+            console.log(stdout)
+          }
+        }
       );
-      ps.on('error', (err) => reject(err))
-      ps.on('message', (msg) => console.log(msg));
+      // ps.on('error', (err) => reject(err))
+      // ps.on('message', (msg) => console.log(msg));
       ps.on('close', (code) => {
         if (!code) {
           resolve()
