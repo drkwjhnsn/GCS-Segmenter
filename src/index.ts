@@ -111,8 +111,9 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       .bucket(sourceBucket)
       .getFiles({ prefix: gcsFilePath });
     
-
-    const tmpDir = fs.mkdtempSync(__dirname);
+      
+    const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
+    const tmpDir = path.join(__dirname, fs.mkdtempSync(urlTitle));
     const originalFilePath = path.join(tmpDir, fileName);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
@@ -124,7 +125,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       });
     });
 
-    const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
     fs.writeFileSync(path.join(tmpDir, `${urlTitle}.key`), randomBytes(16));
 
     console.log(`title: ${title}`)
