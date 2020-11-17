@@ -102,7 +102,7 @@ const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
 
 const processVideo = async (sourceBucket: string, gcsFilePath: string, email: string) => {
   console.log({ bucketName: sourceBucket , gcsFilePath, email});
-  console.log(`Processing of ${gcsFilePath} started on ${new Date().toUTCString()}`)
+  console.log(clc.green(`Processing of ${gcsFilePath} started on ${new Date().toUTCString()}`))
   const fileName = path.basename(gcsFilePath);
   let [title, extension] = fileName.split(".");
   title = title.replace(/\.[^/.]+$/, "");
@@ -180,8 +180,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
           }
         }
       );
-      // ps.on('error', (err) => reject(err))
-      // ps.on('message', (msg) => console.log(msg));
       ps.on('close', (code) => {
         if (!code) {
           resolve()
@@ -197,8 +195,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
 
     console.log(`Segmentation of "${title}" complete`);
     const tmpDirContents = fs.readdirSync(tmpDir);
-
-    console.log(tmpDirContents)
 
     const uploadToOpenBucket = tmpDirContents.filter((file) =>
       /.*?\.ts$/.test(file)
