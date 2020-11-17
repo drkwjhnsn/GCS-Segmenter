@@ -106,6 +106,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
   const fileName = path.basename(gcsFilePath);
   let [title, extension] = fileName.split(".");
   title = title.replace(/\.[^/.]+$/, "");
+  const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
+  const tmpDir = path.join(__dirname, urlTitle);
   try {
     await sendStartedEmail(email, title);
 
@@ -114,8 +116,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       .getFiles({ prefix: gcsFilePath });
     
       
-    const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
-    const tmpDir = path.join(__dirname, urlTitle);
     fs.mkdirSync(tmpDir)
     const originalFilePath = path.join(tmpDir, fileName);
     console.log(originalFilePath)
@@ -238,6 +238,13 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
   } catch (err) {
     console.error(clc.red(err));
     sendErrorEmail(email, title, err)
+    try {
+      const tmpDirContents = fs.readdirSync(tmpDir);
+      tmpDirContents.forEach((fname) =>
+        fs.unlinkSync(path.join(tmpDir, fname))
+      );
+      fs.rmdirSync(tmpDir);
+    } catch {}
   }
 }
 
