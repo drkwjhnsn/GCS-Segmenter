@@ -140,7 +140,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
   try {
     await new Promise((resolve, reject) => {
       const ps = exec(
-        `${ffmpeg_static}  -y \
+        `${ffmpeg_static} -y \
+        -master_pl_name master.m3u8 \
         -i "${originalFilePath}" \
         -c:a copy \
         -hls_key_info_file "${urlTitle}.keyinfo" \
@@ -154,15 +155,15 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         -map 0 -s:v:4 1920x1080 -b:v:4 2056k -maxrate:v:4 2262k -bufsize:v:4 3393k\
         -map 0 -s:v:5 2560x1440 -b:v:5 3212k -maxrate:v:5 3533k -bufsize:v:5 4818k\
         -map a:0 -c:a:0 aac -b:a:0 36k -ac 1 \
-        -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
+        -var_stream_map \
+        "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
         -f hls \
         -hls_base_url "${baseUrl}" \
-        -master_pl_name master.m3u8 \
         -hls_time 6 \
         -hls_list_size 0 \
         -hls_playlist_type vod \
-        -hls_segment_filename "${tmpDir}/v%vfileSequence%d.ts" \
-        "${tmpDir}/v%vprog_index.m3u8"`,
+        -hls_segment_filename "v%vfileSequence%d.ts" \
+        "v%vprog_index.m3u8"`,
         { cwd: tmpDir }
       );
       ps.on('error', (err) => console.error(err))
@@ -198,6 +199,10 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     const uploadToAuthBucket = tmpDirContents.filter((file) =>
       /.*?\.(m3u8|key)$/.test(file)
     );
+
+    console.log('Header Files:')
+    console.log(uploadToAuthBucket);
+
     const authBucket = storage.bucket(AUTH_BUCKET!);
     const authPromises = uploadToAuthBucket.map((file) => {
       return authBucket.upload(path.join(tmpDir, file), {
