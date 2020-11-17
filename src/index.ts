@@ -238,13 +238,23 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
   } catch (err) {
     console.error(clc.red(err));
     sendErrorEmail(email, title, err)
+
+    // try {
+    //   await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `processed/${urlTitle}.${extension}` });
+    //   await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
+    // } catch {
+    //   console.error(clc.red("Failed to move original video"))
+    // }
+
     try {
       const tmpDirContents = fs.readdirSync(tmpDir);
       tmpDirContents.forEach((fname) =>
         fs.unlinkSync(path.join(tmpDir, fname))
       );
       fs.rmdirSync(tmpDir);
-    } catch {}
+    } catch {
+      console.log(clc.red('Failed to remove temporary directory'))
+    }
   }
 }
 
