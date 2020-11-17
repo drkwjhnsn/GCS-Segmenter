@@ -113,7 +113,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     
       
     const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
-    const tmpDir = path.join(__dirname, fs.mkdtempSync(urlTitle));
+    const tmpDir = path.join(__dirname, urlTitle);
+    fs.mkdirSync(tmpDir)
     const originalFilePath = path.join(tmpDir, fileName);
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
