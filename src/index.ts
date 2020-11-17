@@ -228,8 +228,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     console.log(`Successfully uploaded "${title}" to GCS`);
     
     
-    // await createCmsEntry(title, masterUrl, duration);
-    // console.log(`Successfully uploaded "${title}" to CMS`);
+    await createCmsEntry(title, masterUrl, duration);
+    console.log(`Successfully uploaded "${title}" to CMS`);
     
     await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `processed/${urlTitle}.${extension}` });
     await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
