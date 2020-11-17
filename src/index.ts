@@ -114,8 +114,9 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       
     const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
     const tmpDir = path.join(__dirname, urlTitle);
-    await (new Promise((resolve, reject) => fs.mkdir(tmpDir, null, (err) => {if (err) return reject(err); return resolve()})))
+    fs.mkdirSync(tmpDir)
     const originalFilePath = path.join(tmpDir, fileName);
+    console.log(originalFilePath)
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
     const duration = await new Promise<number>((resolve, reject) => {
@@ -127,6 +128,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     });
 
     fs.writeFileSync(path.join(tmpDir, `${urlTitle}.key`), randomBytes(16));
+    console.log(tmpDir)
 
     console.log(`title: ${title}`)
     const keyUrl = `https://storage.googleapis.com/${AUTH_BUCKET}/${urlTitle}/${urlTitle}.key`;
