@@ -169,9 +169,9 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         "v%vprog_index.m3u8"`,
         { cwd: tmpDir }
       );
-      ps.on('error', (err) => console.error(err))
+      ps.on('error', (err) => reject(err))
       ps.on('message', (msg) => console.log(msg));
-      ps.on('exit', (code) => {
+      ps.on('close', (code) => {
         if (!code) {
           resolve()
         } else {
