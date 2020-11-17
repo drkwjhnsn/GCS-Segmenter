@@ -104,7 +104,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
   console.log({ bucketName: sourceBucket , gcsFilePath, email});
   console.log(`Processing of ${gcsFilePath} started on ${new Date().toUTCString()}`)
   const fileName = path.basename(gcsFilePath);
-  const title = fileName.split(".")[0].replace(/\.[^/.]+$/, "");
+  let [title, extension] = fileName.split(".");
+  title = title.replace(/\.[^/.]+$/, "");
   try {
     await sendStartedEmail(email, title);
 
@@ -230,7 +231,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     // await createCmsEntry(title, masterUrl, duration);
     // console.log(`Successfully uploaded "${title}" to CMS`);
     
-    await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `processed/${urlTitle}` });
+    await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `processed/${urlTitle}.${extension}` });
     await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
 
     // cleanup
