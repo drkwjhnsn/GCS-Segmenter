@@ -225,20 +225,21 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
 
     await Promise.all([...openPromises, ...authPromises]);
     console.log(`Successfully uploaded "${title}" to GCS`);
+    
+    
+    // await createCmsEntry(title, masterUrl, duration);
+    // console.log(`Successfully uploaded "${title}" to CMS`);
+    
+    await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `processed/${urlTitle}` });
+    await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
 
     // cleanup
     tmpDirContents.forEach((fname) => fs.unlinkSync(path.join(tmpDir, fname)));
     fs.rmdirSync(tmpDir);
-
-    await createCmsEntry(title, masterUrl, duration);
-    console.log(`Successfully uploaded "${title}" to CMS`);
-
-    await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `processed/${urlTitle}` });
-    await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
-
+    
     await sendCompletedEmail(email, title);
   } catch (err) {
-    console.error(err);
+    console.error(clc.red(err));
     sendErrorEmail(email, title, err)
   }
 }
