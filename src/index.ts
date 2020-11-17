@@ -13,7 +13,7 @@ import * as ffmpeg from "fluent-ffmpeg";
 import { exec } from "child_process";
 import { randomBytes } from "crypto"
 import dotenv from 'dotenv';
-import colors from 'colors';
+import clc from 'cli-color';
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')})
 
@@ -173,7 +173,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
           if (error) {
             reject(error);
           } else if (stderr) {
-            console.error(stderr.red);
+            console.error(clc.red(stderr));
           } else if (stdout) {
             console.log(stdout);
           }
@@ -190,7 +190,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       })
     })
   } catch (err) {
-    console.log(`ERROR: \n${err.message.red}`)
+    console.log(`ERROR: \n${clc.red(err.message)}`)
     return
   }
 
