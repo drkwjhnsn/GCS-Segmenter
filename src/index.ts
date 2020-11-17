@@ -13,6 +13,7 @@ import * as ffmpeg from "fluent-ffmpeg";
 import { exec } from "child_process";
 import { randomBytes } from "crypto"
 import dotenv from 'dotenv';
+import colors from 'colors';
 
 dotenv.config({ path: path.join(__dirname, '..', '.env')})
 
@@ -144,7 +145,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     await new Promise((resolve, reject) => {
       const ps = exec(
         `${ffmpeg_static} -y \
-        -master_pl_name master.m3u8 \
         -i "${originalFilePath}" \
         -c:a copy \
         -hls_key_info_file "${urlTitle}.keyinfo" \
@@ -161,19 +161,21 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         -var_stream_map \
         "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
         -f hls \
+        -master_pl_name master.m3u8 \
         -hls_base_url "${baseUrl}" \
         -hls_time 6 \
         -hls_list_size 0 \
         -hls_playlist_type vod \
         -hls_segment_filename "v%vfileSequence%d.ts" \
         "v%vprog_index.m3u8"`,
-        { cwd: tmpDir  }, (error, stdout, stderr) => {
+        { cwd: tmpDir },
+        (error, stdout, stderr) => {
           if (error) {
             reject(error);
           } else if (stderr) {
-            console.error(stderr)
+            console.error(stderr.red);
           } else if (stdout) {
-            console.log(stdout)
+            console.log(stdout);
           }
         }
       );
@@ -188,7 +190,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
       })
     })
   } catch (err) {
-    console.log(`ERROR: \n${err.message}`)
+    console.log(`ERROR: \n${err.message.red}`)
     return
   }
 
