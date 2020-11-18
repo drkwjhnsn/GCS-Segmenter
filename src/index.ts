@@ -10,7 +10,7 @@ import path from 'path';
 import ffmpeg_static from "ffmpeg-static";
 import ffprobe_static from "ffprobe-static";
 import * as ffmpeg from "fluent-ffmpeg";
-import { exec } from "child_process";
+import { spawn } from "child_process";
 import { randomBytes } from "crypto"
 import dotenv from 'dotenv';
 import clc from 'cli-color';
@@ -108,6 +108,7 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
   title = title.replace(/\.[^/.]+$/, "");
   const urlTitle = title.replace(/[/\s.?=&:#]+/g, '');
   const tmpDir = path.join(__dirname, urlTitle);
+  const originalFilePath = path.join(tmpDir, fileName);
   try {
     await sendStartedEmail(email, title);
 
@@ -117,7 +118,6 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     
       
     fs.mkdirSync(tmpDir)
-    const originalFilePath = path.join(tmpDir, fileName);
     console.log(originalFilePath)
     await videoObjectResponse[0].download({ destination: originalFilePath });
 
@@ -142,9 +142,8 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     console.log(originalFilePath);
     console.log(`urlTitle: ${urlTitle}`)
     
-  try {
     await new Promise((resolve, reject) => {
-      const ps = exec(
+      const ps = spawn(
         `${ffmpeg_static} -y \
         -i "${originalFilePath}" \
         -c:a copy \
@@ -170,29 +169,28 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         -hls_segment_filename "v%vfileSequence%d.ts" \
         "v%vprog_index.m3u8"`,
         { cwd: tmpDir },
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error);
-          } else if (stderr) {
-            console.error(clc.red(stderr));
-          } else if (stdout) {
-            console.log(stdout);
-          }
-        }
       );
-      ps.on('close', (code) => {
-        if (!code) {
-          resolve()
+      
+      ps.stdout.on("data", (data) => {
+        console.log(`stdout: ${data}`);
+      });
+
+      ps.stderr.on("data", (data) => {
+        console.error(`stderr: ${data}`);
+      });
+
+      ps.on("error", (err) => {
+        console.error(clc.red(`Failed to start ffmpeg: ${err.message}`));
+      });
+
+      ps.on("close", (code) => {
+        if (code) {
+          reject(new Error(clc.red(`child process exited with code ${code}`)));
         } else {
-          reject(code)
+          resolve();
         }
-      })
-    })
-  } catch (err) {
-    console.log(`ERROR: \n${clc.red(err.message)}`)
-    // return
-    throw err
-  }
+      });
+    });
 
     console.log(`Segmentation of "${title}" complete`);
     const tmpDirContents = fs.readdirSync(tmpDir);
@@ -240,12 +238,12 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     console.error(clc.red(err));
     sendErrorEmail(email, title, err)
 
-    // try {
-    //   await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `processed/${urlTitle}.${extension}` });
-    //   await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
-    // } catch {
-    //   console.error(clc.red("Failed to move original video"))
-    // }
+    try {
+      await storage.bucket(sourceBucket).upload(originalFilePath, { destination: `errored/${urlTitle}.${extension}` });
+      await storage.bucket(sourceBucket).deleteFiles({ prefix: gcsFilePath })
+    } catch {
+      console.error(clc.red("Failed to move original video"))
+    }
 
     try {
       const tmpDirContents = fs.readdirSync(tmpDir);
