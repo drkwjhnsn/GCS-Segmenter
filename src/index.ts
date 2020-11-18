@@ -10,7 +10,7 @@ import path from 'path';
 import ffmpeg_static from "ffmpeg-static";
 import ffprobe_static from "ffprobe-static";
 import * as ffmpeg from "fluent-ffmpeg";
-import { spawn } from "child_process";
+import { exec } from "child_process";
 import { randomBytes } from "crypto"
 import dotenv from 'dotenv';
 import clc from 'cli-color';
@@ -141,10 +141,10 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
     fs.writeFileSync(path.join(tmpDir, `${urlTitle}.keyinfo`), keyInfo);
     console.log(originalFilePath);
     console.log(`urlTitle: ${urlTitle}`)
-    
-    await new Promise((resolve, reject) => {
-      const ps = spawn(
-        `${ffmpeg_static} -y \
+
+      await new Promise((resolve, reject) => {
+        const ps = exec(
+          `${ffmpeg_static} -y \
         -i "${originalFilePath}" \
         -c:a copy \
         -hls_key_info_file "${urlTitle}.keyinfo" \
@@ -168,29 +168,76 @@ const processVideo = async (sourceBucket: string, gcsFilePath: string, email: st
         -hls_playlist_type vod \
         -hls_segment_filename "v%vfileSequence%d.ts" \
         "v%vprog_index.m3u8"`,
-        { cwd: tmpDir },
-      );
+          { cwd: tmpDir, maxBuffer: 16777216 },
+          (error, stdout, stderr) => {
+            if (error) {
+              reject(error);
+            } else if (stderr) {
+              console.error(clc.red(stderr));
+            } else if (stdout) {
+              console.log(stdout);
+            }
+          }
+        );
+        ps.on("close", (code) => {
+          if (!code) {
+            resolve();
+          } else {
+            reject(code);
+          }
+        });
+      });
+
+    
+    // await new Promise((resolve, reject) => {
+    //   const ps = spawn(
+    //     `${ffmpeg_static} -y \
+    //     -i "${originalFilePath}" \
+    //     -c:a copy \
+    //     -hls_key_info_file "${urlTitle}.keyinfo" \
+    //     -sc_threshold 0 \
+    //     -c:v libx264 \
+    //     -filter:v fps=23.98 -g 60 \
+    //     -map v:0 -s:v:0 214x120 -b:v:0 156k -maxrate:v:0 170k -bufsize:v:0 255k -profile:v:0 baseline \
+    //     -map 0 -s:v:1 640x360 -b:v:1 384k -maxrate:v:1 422k -bufsize:v:1 633k\
+    //     -map 0 -s:v:2 854x480 -b:v:2 512k -maxrate:v:2 563k -bufsize:v:2 845k\
+    //     -map 0 -s:v:3 1280x720 -b:v:3 1024k -maxrate:v:3 1126k -bufsize:v:3 1689k\
+    //     -map 0 -s:v:4 1920x1080 -b:v:4 2056k -maxrate:v:4 2262k -bufsize:v:4 3393k\
+    //     -map 0 -s:v:5 2560x1440 -b:v:5 3212k -maxrate:v:5 3533k -bufsize:v:5 4818k\
+    //     -map a:0 -c:a:0 aac -b:a:0 36k -ac 1 \
+    //     -var_stream_map \
+    //     "v:0,a:0 v:1,a:1 v:2,a:2 v:3,a:3 v:4,a:4 v:5,a:5" \
+    //     -f hls \
+    //     -master_pl_name master.m3u8 \
+    //     -hls_base_url "${baseUrl}" \
+    //     -hls_time 6 \
+    //     -hls_list_size 0 \
+    //     -hls_playlist_type vod \
+    //     -hls_segment_filename "v%vfileSequence%d.ts" \
+    //     "v%vprog_index.m3u8"`,
+    //     { cwd: tmpDir },
+    //   );
       
-      ps.stdout.on("data", (data) => {
-        console.log(`stdout: ${data}`);
-      });
+    //   ps.stdout.on("data", (data) => {
+    //     console.log(`stdout: ${data}`);
+    //   });
 
-      ps.stderr.on("data", (data) => {
-        console.error(`stderr: ${data}`);
-      });
+    //   ps.stderr.on("data", (data) => {
+    //     console.error(`stderr: ${data}`);
+    //   });
 
-      ps.on("error", (err) => {
-        console.error(clc.red(`Failed to start ffmpeg: ${err.message}`));
-      });
+    //   ps.on("error", (err) => {
+    //     console.error(clc.red(`Failed to start ffmpeg: ${err.message}`));
+    //   });
 
-      ps.on("close", (code) => {
-        if (code) {
-          reject(new Error(clc.red(`child process exited with code ${code}`)));
-        } else {
-          resolve();
-        }
-      });
-    });
+    //   ps.on("close", (code) => {
+    //     if (code) {
+    //       reject(new Error(clc.red(`child process exited with code ${code}`)));
+    //     } else {
+    //       resolve();
+    //     }
+    //   });
+    // });
 
     console.log(`Segmentation of "${title}" complete`);
     const tmpDirContents = fs.readdirSync(tmpDir);
