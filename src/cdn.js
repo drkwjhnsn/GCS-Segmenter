@@ -25,16 +25,15 @@ const storage = new Storage({
 
 const main = async () => {
   const sourceBucket = "db-method-hls-headers";
-  const [videoObjectResponse] = await storage
-    .bucket(sourceBucket)
-    .getFiles({
-      prefix: "DBMethod_AllegraParis_CardioSculpt_V1/",
-    });
+  const [videoObjectResponse] = await storage.bucket(sourceBucket).getFiles({
+    prefix: "LO_RES-Arms+Chest/",
+  });
   // videoObjectResponse = videoObjectResponse.filter(
   //   ({ metadata }) => metadata && metadata.contentType === "video/mp4"
   // ).sort((a, b) => a.metadata.size - b.metadata.size)
-  videoObjectResponse.forEach((file) => {
+  videoObjectResponse.filter(({name}) => /v\dprog_index\.m3ui/.test(name) ).forEach((file) => {
       console.log(file.name);
+      
   })
 
   // for (let i = 0; i < videoObjectResponse.length; i++) {
