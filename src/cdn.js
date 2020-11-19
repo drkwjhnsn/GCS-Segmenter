@@ -39,7 +39,7 @@ const main = async () => {
   fs.mkdirSync(fullTemp);
   try {
     const [videoObjectResponse] = await storage.bucket(sourceBucket).getFiles({
-      prefix: "LO_RES-Arms+Chest/",
+      prefix: "DBMethod_Eddie_Form_V1/",
     });
 
     const vidMap = {};
@@ -63,8 +63,8 @@ const main = async () => {
         const fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' })
         const lineByLine = fileContents.split('\n')
         const updatedLines = lineByLine.map((line) =>
-          // line.replace("http://34.107.157.58:80", "https://cdn.thedbmethod.com")
-          line.replace("https://cdn.thedbmethod.com", "http://34.107.157.58:80")
+          line.replace("http://34.107.157.58:80", "https://cdn.thedbmethod.com")
+          // line.replace("https://cdn.thedbmethod.com", "http://34.107.157.58:80")
         );
         const updatedFileContents = updatedLines.join('\n')
         fs.writeFileSync(filePath, updatedFileContents)
