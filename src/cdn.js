@@ -28,7 +28,7 @@ const main = async () => {
   const [videoObjectResponse] = await storage
     .bucket(sourceBucket)
     .getFiles({
-      prefix: "DBMethod_AllegraParis_CardioSculpt_V1/v1prog_index.m3u8",
+      prefix: "DBMethod_AllegraParis_CardioSculpt_V1/",
     });
   // videoObjectResponse = videoObjectResponse.filter(
   //   ({ metadata }) => metadata && metadata.contentType === "video/mp4"
