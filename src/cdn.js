@@ -38,9 +38,7 @@ const main = async () => {
   const fullTemp = path.join(__dirname, sourceBucket);
   fs.mkdirSync(fullTemp);
   try {
-    const [videoObjectResponse] = await storage.bucket(sourceBucket).getFiles({
-      prefix: "DBMethod_Eddie_Form_V1/",
-    });
+    const [videoObjectResponse] = await storage.bucket(sourceBucket).getFiles();
 
     const vidMap = {};
     videoObjectResponse.forEach((file) => {
