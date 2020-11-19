@@ -49,27 +49,34 @@ const main = async () => {
       vidMap[vidFolder][filename] = file;
     })
 
-    const fullPromises = _.map(vidMap, (vidFiles, vidname) => {
+    const fullPromises = _.map(vidMap, async (vidFiles, vidname) => {
       const vidPath = path.join(fullTemp, vidname)
       fs.mkdirSync(vidPath)
       const downloadPromises = _.filter(vidFiles, ({ name }) =>
         /v\dprog_index\.m3u8/.test(name)
-      ).map((file) => {
+      ).map(async (file) => {
         const nameArr = file.name.split('/')
         const filename = nameArr[nameArr.length - 1]
         const filePath = path.join(vidPath, filename)
-        return file.download({ destination: filePath })
+        await file.download({ destination: filePath })
+        // process single header file
+        const fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' })
+        const lineByLine = fileContents.split('\n')
+        const updatedLines = lineByLine.map((line) =>
+          line.replace("http://34.107.157.58:80", "https://cdn.thedbmethod.com")
+        );
+        const updatedFileContents = updatedLines.join('\n')
+        fs.writeFileSync(filePath, updatedFileContents)
       });
-  
-      return Promise.all(downloadPromises).catch((err) => {
-        // console.error(err)
-        // deleteFolder(vidPath)
-        throw err
-      });
+      await Promise.all(downloadPromises)
+        .catch((err) => {
+          // deleteFolder(vidPath)
+          throw err
+        });
+      // process as group of video header files
+      
     });
-
     await Promise.all(fullPromises)
-
   } catch (err) {
     console.error(err)
     // deleteFolder(fullTemp);
