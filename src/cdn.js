@@ -55,7 +55,6 @@ const main = async () => {
       const downloadPromises = _.filter(vidFiles, ({ name }) =>
         /v\dprog_index\.m3u8/.test(name)
       ).map((file) => {
-        mk
         return file.download({ destination: vidPath })
       });
   
