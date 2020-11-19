@@ -51,10 +51,13 @@ const main = async () => {
 
     const fullPromises = _.map(vidMap, (vidFiles, vidname) => {
       const vidPath = path.join(fullTemp, vidname)
-      fs.mkdirSync()
+      fs.mkdirSync(vidPath)
       const downloadPromises = _.filter(vidFiles, ({ name }) =>
         /v\dprog_index\.m3u8/.test(name)
-      ).map((file) => file.download({ destination: vidPath }));
+      ).map((file) => {
+        mk
+        return file.download({ destination: vidPath })
+      });
   
       return Promise.all(downloadPromises).catch((err) => {
         console.log(err)
