@@ -74,7 +74,7 @@ const main = async () => {
           throw err
         });
       // process as group of video header files
-      
+      console.log(`Updated ${vidname}`)
     });
     await Promise.all(fullPromises)
   } catch (err) {
