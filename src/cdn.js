@@ -27,7 +27,7 @@ const main = async () => {
   const sourceBucket = "db-method-hls-headers";
   const [videoObjectResponse] = await storage
     .bucket(sourceBucket)
-    .getFiles({ prefix: "LO_RES-Arms+Chest/v0prog_index.m3u8" });
+    .getFiles({ });
   // videoObjectResponse = videoObjectResponse.filter(
   //   ({ metadata }) => metadata && metadata.contentType === "video/mp4"
   // ).sort((a, b) => a.metadata.size - b.metadata.size)
