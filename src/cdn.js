@@ -27,11 +27,13 @@ const main = async () => {
   const sourceBucket = "db-method-hls-headers";
   const [videoObjectResponse] = await storage
     .bucket(sourceBucket)
-    .getFiles({ });
+    .getFiles({
+      prefix: "DBMethod_AllegraParis_CardioSculpt_V1/v1prog_index.m3u8",
+    });
   // videoObjectResponse = videoObjectResponse.filter(
   //   ({ metadata }) => metadata && metadata.contentType === "video/mp4"
   // ).sort((a, b) => a.metadata.size - b.metadata.size)
-  console.log(videoObjectResponse)
+  console.log(videoObjectResponse.metadata.name)
   // for (let i = 0; i < videoObjectResponse.length; i++) {
   //   const meta = videoObjectResponse[i].metadata;
   //   console.log(`${meta.name}: ${meta.size}`)
