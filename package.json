@@ -21,6 +21,7 @@
     "ffmpeg-static": "^4.2.7",
     "ffprobe-static": "^3.0.0",
     "fluent-ffmpeg": "^2.1.2",
+    "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "nodemailer": "^6.4.13",
     "p-queue": "^6.6.2"
