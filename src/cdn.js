@@ -31,10 +31,16 @@ const main = async () => {
   // videoObjectResponse = videoObjectResponse.filter(
   //   ({ metadata }) => metadata && metadata.contentType === "video/mp4"
   // ).sort((a, b) => a.metadata.size - b.metadata.size)
-  videoObjectResponse.filter(({name}) => /v\dprog_index\.m3ui/.test(name) ).forEach((file) => {
+  videoObjectResponse
+    .map((file) => {
       console.log(file.name);
-      
-  })
+      return file;
+    })
+    .filter(({ name }) => /v\dprog_index\.m3ui/.test(name))
+    .map((file) => {
+      console.log(`after: ${file.name}`);
+      return file;
+    });
 
   // for (let i = 0; i < videoObjectResponse.length; i++) {
   //   const meta = videoObjectResponse[i].metadata;
