@@ -67,6 +67,7 @@ const main = async () => {
         );
         const updatedFileContents = updatedLines.join('\n')
         fs.writeFileSync(filePath, updatedFileContents)
+        await storage.bucket(sourceBucket).upload(filePath, { destination: file.name })
       });
       await Promise.all(downloadPromises)
         .catch((err) => {
