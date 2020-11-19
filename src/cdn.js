@@ -59,8 +59,8 @@ const main = async () => {
       });
   
       return Promise.all(downloadPromises).catch((err) => {
-        console.error(err)
-        deleteFolder(vidPath)
+        // console.error(err)
+        // deleteFolder(vidPath)
         throw err
       });
     });
@@ -69,7 +69,7 @@ const main = async () => {
 
   } catch (err) {
     console.error(err)
-    deleteFolder(fullTemp);
+    // deleteFolder(fullTemp);
   }
 
 };
