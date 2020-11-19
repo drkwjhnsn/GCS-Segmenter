@@ -33,7 +33,7 @@ const main = async () => {
   // videoObjectResponse = videoObjectResponse.filter(
   //   ({ metadata }) => metadata && metadata.contentType === "video/mp4"
   // ).sort((a, b) => a.metadata.size - b.metadata.size)
-  console.log(videoObjectResponse.metadata.name)
+  console.log(videoObjectResponse)
   // for (let i = 0; i < videoObjectResponse.length; i++) {
   //   const meta = videoObjectResponse[i].metadata;
   //   console.log(`${meta.name}: ${meta.size}`)
