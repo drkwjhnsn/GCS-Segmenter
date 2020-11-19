@@ -36,7 +36,7 @@ const main = async () => {
       console.log(file.name);
       return file;
     })
-    .filter(({ name }) => /v\dprog_index\.m3ui/.test(name))
+    .filter(({ name }) => /v\dprog_index\.m3u8/.test(name))
     .map((file) => {
       console.log(`after: ${file.name}`);
       return file;
