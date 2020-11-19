@@ -59,7 +59,7 @@ const main = async () => {
       });
   
       return Promise.all(downloadPromises).catch((err) => {
-        // console.log(err)
+        console.error(err)
         deleteFolder(vidPath)
         throw err
       });
@@ -68,7 +68,7 @@ const main = async () => {
     await Promise.all(fullPromises)
 
   } catch (err) {
-    // console.log(err)
+    console.error(err)
     deleteFolder(fullTemp);
   }
 
