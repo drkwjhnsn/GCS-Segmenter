@@ -59,24 +59,31 @@ app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async 
   res.status(202).end();
 });
 
-const sendStartedEmail = (userEmail: string, title: string ) => transporter.sendMail({
-    from: EMAIL_USER, 
-    to: userEmail, 
-    subject: `Video processing has started for "${title}"`, 
-  });
+// Right now there is no valid SMTP service so I stubbed the email functions
 
-const sendErrorEmail = (userEmail: string, title: string, error: Error ) => transporter.sendMail({
-    from: EMAIL_USER, 
-    to: userEmail, 
-    subject: `There has been an error processing "${title}"`, 
-    text: error.stack, 
-  });
+// TODO: When you have a valid SMTP service, update the SMTP creds in the env vars and unstub the following functions
 
-const sendCompletedEmail = (userEmail: string, title: string ) => transporter.sendMail({
-    from: EMAIL_USER, 
-    to: userEmail, 
-    subject: `Video processing has completed for "${title}"`, 
-  });
+const sendStartedEmail = (userEmail: string, title: string ) => null
+// transporter.sendMail({
+//     from: EMAIL_USER, 
+//     to: userEmail, 
+//     subject: `Video processing has started for "${title}"`, 
+//   });
+
+const sendErrorEmail = (userEmail: string, title: string, error: Error ) => null
+// transporter.sendMail({
+//     from: EMAIL_USER, 
+//     to: userEmail, 
+//     subject: `There has been an error processing "${title}"`, 
+//     text: error.stack, 
+//   });
+
+const sendCompletedEmail = (userEmail: string, title: string ) => null
+// transporter.sendMail({
+//     from: EMAIL_USER, 
+//     to: userEmail, 
+//     subject: `Video processing has completed for "${title}"`, 
+//   });
 
 const createCmsEntry = (title: string, masterUrl: string, duration: number) => {
   return cmsClient
