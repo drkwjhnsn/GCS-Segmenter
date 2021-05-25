@@ -46,12 +46,14 @@ const queue = new PQueue({concurrency: 1});
 
 app.post<{ gcsFilePath: string, bucketName: string, email: string }>("/", async (req, res) => {
   const {
-    gcsFilePath,
+    gcsFilePath: hackyFilePath,
     bucketName,
     email,
   } = req.body;
 
 
+  // Hacky fix for correct location of manual trigger
+  const gcsFilePath = hackyFilePath.replace('fix/', 'videos/')
 
   queue.add(() => processVideo(bucketName, gcsFilePath, email));
   console.log(`Added ${gcsFilePath} to work queue`)
